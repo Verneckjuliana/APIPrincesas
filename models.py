@@ -3,6 +3,6 @@ from pydantic import BaseModel
 
 class Princesa(BaseModel):
     id: Optional[int] = None
-    nome: str
-    idade: int
-    filme: str
+    nome: str | None = None
+    idade: int | None = None
+    filme: str | None = None

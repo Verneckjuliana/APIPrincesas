@@ -84,11 +84,11 @@ async def mensagem():
 
 #lista de princesas
 @app.get("/todas_princesas")
-async def get_princesas(db: Any = Depends(banco_princesas)):
+async def get_princesas(banco_princesas: Any = Depends(banco_princesas)):
     return princesas
 
 #buscar princesa pelo ID
-@app.get("/princesas/{id_princesa}")
+@app.get("/princesa/{id_princesa}")
 async def princesa(id_princesa: int):
     if id_princesa in princesas:
         return princesas[id_princesa]
@@ -121,17 +121,21 @@ async def put_princesa(id_princesa: int, princesa: Princesa):
 async def del_princesa(id_princesa: int, princesa: Princesa):
     if id_princesa in princesas:
         del princesas[id_princesa]
-        return {"Erro": "Delete a princesa {id_princesa}"}
+        return {f"Deletou a princesa {id_princesa}"}
     else:
         return {"Erro": "Não existe essa princesa!"}
     
+#metodo patch (p/ caso queira atualizar apenas um item)
+@app.patch("/princesa/{id_princesa}")
+async def update_princesa(id_princesa: int, princesa: Princesa):
+    stored_princesa_data = princesas[id_princesa]
+    stored_princesa_model = Princesa(**stored_princesa_data)
+    update_data = princesa.dict(exclude_unset=True)
+    updated_princesa = stored_princesa_model.copy(update=update_data)
+    princesas[id_princesa] = jsonable_encoder(updated_princesa)
+    return updated_princesa
 
-
-#metodo patch
-
-#Fazer com que seus colegas acessem sua API
-
-
+#fazer com que acessem minha API (ativar o compartilhamento de pastas)
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run('main:app', host='127.0.0.1', port=8000, log_level='info', reload=True)
+    uvicorn.run('main:app', host='10.234.92.108', port=8000, log_level='info', reload=True)
